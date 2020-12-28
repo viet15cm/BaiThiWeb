@@ -9,5 +9,5 @@
 
 - Mở File  quanlytintuc.sql
 
-![Image](AnhThi/h0.png)
+![Image](./AnhThi/h0.png)
 
