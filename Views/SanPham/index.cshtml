@@ -1,0 +1,122 @@
+﻿@model IEnumerable<WebQuangTriKinhDoanh.Models.mvcModels.mvcSanPham>
+
+@{
+    ViewBag.Title = "index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <link href="~/Scripts/Libraryjs/datatable-js/css.dataTables.min.css" rel="stylesheet" />
+}
+
+<h2> <i class="far fa-map"></i> Danh Mục <i class="fab fa-product-hunt"></i> Sản Phẩm</h2>
+
+<p>
+    <a href="@Url.Action("AddOrEdit","SanPham")" class="btn btn-default"><i class="fas fa-plus"></i> Create New</a>
+</p>
+<div class="grid" style="width: 100%; height: 60vh">
+    <table id="tbSanPham" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Tên Sản Phẩm</th>
+                <th>Anh</th>
+                <th>Giá Nhập</th>                
+                <th>Ngày Cập Nhật</th>
+                <th>Tùy Chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+@section scripts{
+
+
+    <script src="~/Scripts/Libraryjs/datatable-js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/Libraryjs/datatable-js/dataTables.scrollResize.min.js"></script>
+    <script>
+
+
+       function loadData(){
+                var model = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+                $('#tbSanPham').DataTable().destroy();
+                debugger;
+                var table = $('#tbSanPham').DataTable({
+                    data: model,
+                    columnDefs: [
+                        { orderable: false, targets: 4 },
+                        { orderable: false, targets: 1 }
+                    ],
+                    columns: [
+                        { data: 'SanPhamCode' },
+                        { data: 'TenSP' },
+                        {
+
+                            data: "Anh",
+                            
+                            render: function (data, type, row, meta) {
+                                var s = data;
+                                while (s.charAt(0) === '~') {
+                                    s = s.substr(1);
+                                }
+                                debugger
+                               
+                                return "<img src=\"" + s + "\" width=\"50\"/ height=\"50\"/>";
+                            },
+                            
+                           
+                        },
+
+                        {
+                            data: 'DonGia',
+                            render: $.fn.dataTable.render.number('.', ',', 0, '₫ ')
+                        },
+
+                        { data: 'NgayCapNhat'},
+                        /*{ data: 'MatHangId' },*/
+                        {
+                            data: 'Id',
+                            render: function (data, type, row, meta) {
+                                var myUrlEdit = '@Url.Action("AddOrEdit", "SanPham")/' + data;
+                                var myUrlDelete = '@Url.Action("Delete", "SanPham")/' + data;
+
+                                return '<a href=\"' + myUrlEdit + '\" class=\"btn btn-default\">Edit</a>' +
+                                        '&nbsp<a href=\"'+ myUrlDelete +'\" class=\"btn btn-default\">Delete</a>';
+                            }
+                        },
+
+                    ],
+
+                    "order": [
+                        [0, "asc"],
+                    ],
+                    "pageLength": 5,
+                    scrollResize: true,
+                    scrollY: 1,
+                    scrollCollapse: true,
+                    paging: true,
+                    dom: 'Bfrtip',
+                });
+                table.columns.adjust().draw();
+            }
+
+
+        function displayShowSuccessMessage() {
+                var successMessage = '@TempData["SuccessMessage"]';
+                if (successMessage != '') {
+                    alertify.success(successMessage);
+                }
+                var errorMessage = '@TempData["ErrorMessage"]';
+                if (errorMessage != '') {
+                    alertify.error(errorMessage);
+                }
+        }
+
+        loadData();
+        displayShowSuccessMessage();
+
+       
+
+    </script>
+
+}

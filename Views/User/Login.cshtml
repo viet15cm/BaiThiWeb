@@ -1,0 +1,226 @@
+﻿@model WebQuangTriKinhDoanh.Models.mvcModels.mvcUser
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayOutLogin.cshtml";
+
+    <style>
+
+        .checkbox .btn,
+        .checkbox-inline .btn {
+            padding-left: 2em;
+            min-width: 7em;
+        }
+
+        .checkbox label,
+        .checkbox-inline label {
+            text-align: left;
+        }
+
+        .icon-login {
+            font-size: 6px;
+        }
+
+        .row {
+            width: 50%;
+            margin: 0px auto;
+            
+        }
+        
+    </style>
+
+    <style>
+
+        .modal {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            background: #808080;
+            opacity: 0.7;
+            display: none;
+           
+        }
+
+        .dialog-error {
+            position: absolute;
+            padding: 10px;
+            width: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+           
+            background: #ffffff;
+            display: none;
+        }
+
+            .dialog-error div {
+                text-align: center;
+            }
+
+                .dialog-error div i {
+                    margin-right: 10px;
+                    color: red;
+                }
+    </style>
+}
+
+<h2>Login</h2>
+
+
+@using (Html.BeginForm("Login", null, FormMethod.Post, new { id = "addGroupForm" }))
+{
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="form-horizontal">
+            <h4>Login</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PassWord, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.PasswordFor(model => model.PassWord, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PassWord, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+
+                    <div class="checkbox">
+
+                        <label>
+                            @Html.CheckBoxFor(model => model.Remember)
+                            Remember
+                        </label>
+
+
+                        
+
+                    </div>
+                    <div class="checkbox">
+
+                        <label>
+                            @Html.CheckBox("IsShowPassWord")
+                            Show PassWord
+                        </label>
+
+                    </div>
+                </div>
+
+               
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input id="btnLogin" data-url="@Url.Action("index","sanPham")" type="submit" value="Login" class="btn btn-default" />
+                    <span class="icon-login">
+                        <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    </span>
+                </div>
+
+
+            </div>
+            <div class="modal">
+
+                <div class="dialog-error">
+                    <div>
+                        <h4><i class="fas fa-exclamation-circle"></i>Password error !!!!</h4>
+                    </div>
+                    <div>
+                        <button id="btnDialogClose">Close</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+            
+                
+
+
+            <div>
+                <a class="btn btn-default" href="@Url.Action("Index", "User")">Back To List</a>
+            </div>
+
+        </div>
+        </div>
+</div>
+    }
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+        <script>
+
+
+            $('input').attr('autocomplete', 'off');
+
+            $('.icon-login').hide();
+            
+
+            $('#addGroupForm').submit(function (e) {
+              
+                if ($(this).valid()) {
+                    $('.icon-login').show();
+                    //the action is send with this ajax request and the send works
+                    $.ajax({
+                        url: this.action,
+                        type: this.method,
+                        data: $(this).serialize(),
+                    }).
+                        done(function (result) {
+                            if (result.access_token != null) {
+                                $('.icon-login').hide();
+                                window.location.href = $("#btnLogin").data('url');
+                            }
+                            else if (result.access_token == null) {
+                                $('.icon-login').hide();
+                                $('.dialog-error').show();
+                                $('.modal').show();
+                                
+                               
+                            } else {
+                                $('.icon-login').hide();
+                                $('.dialog-error').show();
+                                $('.modal').show();
+                                
+                            }
+                        }).fail(function () {
+                            $('.icon-login').hide();
+                            $('.modal').show();
+                        });
+
+                }
+                e.preventDefault();
+            });
+
+
+            $('#IsShowPassWord').click(function () {
+                debugger
+                if ($(this).prop("checked") == true) {
+                    $('#PassWord').attr('type', 'text');
+                }
+                else if ($(this).prop("checked") == false) {
+                    $('#PassWord').attr('type', 'password');
+                }
+            });
+
+            $('#btnDialogClose').click(function (e) {
+
+
+                $('.modal').hide();
+                e.preventDefault();
+
+            });
+
+
+        </script>
+    }
